@@ -32,7 +32,9 @@ public class LevelUpCongratsPlugin extends Plugin
     private static final int DISPLAY_MS = 5000;
 
     // The messages appear scattered across this window, in milliseconds
-    private static final int STAGGER_MS = 2000;
+    private static final int STAGGER_MS = 3000;
+
+    private static final int INITIAL_DELAY_MS = 1200;
 
     @Inject
     private Client client;
@@ -106,7 +108,7 @@ public class LevelUpCongratsPlugin extends Plugin
 
             // A random delay between 0 and STAGGER_MS, so each player's
             // message appears at a slightly different moment.
-            int appearDelay = random.nextInt(STAGGER_MS);
+            int appearDelay = INITIAL_DELAY_MS + random.nextInt(STAGGER_MS);
 
             executor.schedule(
                     () -> clientThread.invoke(() -> player.setOverheadText(message)),
