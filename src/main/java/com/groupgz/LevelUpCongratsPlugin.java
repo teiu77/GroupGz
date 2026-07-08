@@ -1,4 +1,4 @@
-package com.example;
+package com.groupgz;
 
 import com.google.inject.Provides;
 import java.util.HashMap;
@@ -22,9 +22,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @Slf4j
 @PluginDescriptor(
-        name = "Level Up Congrats",
-        description = "When you level up, nearby players cheer you on (only on your screen).",
-        tags = {"level", "levelup", "fun", "congrats"}
+        name = "Group Gz",
+        description = "When you level up, nearby players will celebrate with you.",
+        tags = {"level", "levelup", "fun", "gz"}
 )
 public class LevelUpCongratsPlugin extends Plugin
 {
