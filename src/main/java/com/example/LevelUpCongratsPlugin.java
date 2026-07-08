@@ -29,11 +29,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 public class LevelUpCongratsPlugin extends Plugin
 {
     // How long each message stays on screen, in milliseconds (5000 = 5 seconds).
-    // Change this number if you want them to last longer or shorter.
     private static final int DISPLAY_MS = 5000;
 
     // The messages appear scattered across this window, in milliseconds
-    // (1000 = spread out over 1 second) so they don't all pop up at once.
     private static final int STAGGER_MS = 2000;
 
     @Inject
@@ -42,19 +40,14 @@ public class LevelUpCongratsPlugin extends Plugin
     @Inject
     private CongratsConfig config;
 
-    // Lets us run something a little later -- used for the stagger and the auto-clear.
     @Inject
     private ScheduledExecutorService executor;
 
-    // Anything that changes the game's on-screen state must run on this special
-    // "client thread." We hand our message changes to it to stay safe.
     @Inject
     private ClientThread clientThread;
 
-    // Remembers the last level we saw for each skill, so we can tell when one goes UP.
     private final Map<Skill, Integer> lastLevels = new HashMap<>();
 
-    // A dice-roller for picking random messages and random delays.
     private final Random random = new Random();
 
     @Provides
@@ -66,8 +59,7 @@ public class LevelUpCongratsPlugin extends Plugin
     @Subscribe
     public void onGameStateChanged(GameStateChanged event)
     {
-        // Back at the login screen? Forget old levels so the next login starts
-        // fresh and doesn't mistake the login "level flood" for real level-ups.
+
         if (event.getGameState() == GameState.LOGIN_SCREEN)
         {
             lastLevels.clear();
@@ -78,18 +70,16 @@ public class LevelUpCongratsPlugin extends Plugin
     public void onStatChanged(StatChanged event)
     {
         Skill skill = event.getSkill();
-        int newLevel = event.getLevel(); // your "real" level from total XP
+        int newLevel = event.getLevel();
 
         Integer oldLevel = lastLevels.get(skill);
         lastLevels.put(skill, newLevel);
 
-        // Nothing recorded yet = the login flood. Stay quiet.
         if (oldLevel == null)
         {
             return;
         }
 
-        // Only celebrate if the level genuinely went up.
         if (newLevel > oldLevel)
         {
             cheerFromNearbyPlayers();
@@ -118,15 +108,12 @@ public class LevelUpCongratsPlugin extends Plugin
             // message appears at a slightly different moment.
             int appearDelay = random.nextInt(STAGGER_MS);
 
-            // Show the message after its little delay.
             executor.schedule(
                     () -> clientThread.invoke(() -> player.setOverheadText(message)),
                     appearDelay,
                     TimeUnit.MILLISECONDS
             );
 
-            // Erase it DISPLAY_MS after it appeared -- but only if it's still the
-            // same message, so we don't wipe out a newer one that replaced it.
             executor.schedule(
                     () -> clientThread.invoke(() ->
                     {
